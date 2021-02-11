@@ -24,12 +24,30 @@ public class CafeController {
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        return machine.getTotalItemsQuantity().toString();
+        return "Initialized Coffee Point with - " + machine.getTotalItemsQuantity().toString();
     }
 
     @GetMapping(value = "/serve")
     @ResponseBody
     public String ServeBeverages() {
-        return machine.prepare().toString();
+        return machine.serve().toString();
     }
+
+    @GetMapping(value = "/status")
+    @ResponseBody
+    public String GetStatus() {
+        return machine.getTotalItemsQuantity().toString();
+    }
+
+    @PostMapping(value = "/refill")
+    @ResponseBody
+    public boolean Refill(@RequestBody String request) {
+        try {
+            machine.refill(request);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -28,11 +28,22 @@ public class CoffeeMachine implements ServingMachine {
 
     @Override
     public void init(String request) {
-        parse(request);
+        Map<String, Object> info = parse(request, "machine");
+        if (info != null) {
+            Map<String, Object> outlets = (Map<String, Object>) info.getOrDefault("outlets", null);
+            Map<String, Object> totalItems = (Map<String, Object>) info.getOrDefault("total_items_quantity", null);
+            Map<String, Object> beverages = (Map<String, Object>) info.getOrDefault("beverages", null);
+            if (outlets == null || totalItems == null || beverages == null) {
+                throw new IllegalArgumentException();
+            }
+            extractValues(outlets, totalItems, beverages);
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override
-    public List<String> prepare() {
+    public List<String> serve() {
         int count = this.outlets;
         Collections.shuffle(this.beverages);
         Iterator<Beverage> iter = this.beverages.iterator();
@@ -48,31 +59,34 @@ public class CoffeeMachine implements ServingMachine {
         return res;
     }
 
-    private void parse(String request) {
+    @Override
+    public boolean refill(String request) {
+        Map<String, Object> info = parse(request, "total_items_quantity");
+        if (info != null) {
+            ConcurrentHashMap<String, Integer> itemQuMap = new ConcurrentHashMap<>();
+            for (Entry<String, Object> item : info.entrySet()) {
+                itemQuMap.put(item.getKey(), (Integer) item.getValue());
+            }
+            refillItems(itemQuMap);
+        } else {
+            throw new IllegalArgumentException();
+        }
+        return true;
+    }
+
+    private Map<String, Object> parse(String request, String root) {
         Map<String, Object> map = new HashMap<String, Object>();
         ObjectMapper mapper = new ObjectMapper();
-
         try {
             map = mapper.readValue(request, new TypeReference<Map<String, Object>>() {
             });
-            Map<String, Object> info = (Map<String, Object>) map.getOrDefault("machine", null);
-            if (info != null) {
-                Map<String, Object> outlets = (Map<String, Object>) info.getOrDefault("outlets", null);
-                Map<String, Object> totalItems = (Map<String, Object>) info.getOrDefault("total_items_quantity", null);
-                Map<String, Object> beverages = (Map<String, Object>) info.getOrDefault("beverages", null);
-                if (outlets == null || totalItems == null || beverages == null) {
-                    throw new IllegalArgumentException();
-                }
-                extractValues(outlets, totalItems, beverages);
-
-            } else {
-                throw new IllegalArgumentException();
-            }
+            return (Map<String, Object>) map.getOrDefault(root, null);
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private void extractValues(Map<String, Object> outlets, Map<String, Object> totalItems,
@@ -117,9 +131,21 @@ public class CoffeeMachine implements ServingMachine {
 
     private synchronized void adjustQuantities(Beverage bv) {
         for (Entry<String, Integer> item : bv.getIngredients().entrySet()) {
-            Integer amnt = this.totalItemsQuantity.get(item.getKey());
-            this.totalItemsQuantity.put(item.getKey(), amnt - item.getValue());
+            update(item, false);
         }
+    }
+
+    private synchronized void refillItems(ConcurrentHashMap<String, Integer> itemQuMap) {
+        for (Entry<String, Integer> item : itemQuMap.entrySet()) {
+            update(item, true);
+        }
+    }
+
+    private synchronized void update(Entry<String, Integer> item, boolean add) {
+        int factor = add ? 1 : -1;
+        Integer amnt = this.totalItemsQuantity.get(item.getKey());
+        Integer val = factor * item.getValue();
+        this.totalItemsQuantity.put(item.getKey(), amnt + val);
     }
 
 }

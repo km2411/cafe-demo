@@ -6,5 +6,7 @@ public interface ServingMachine {
 
     public void init(String request);
 
-    public List<String> prepare();
+    public List<String> serve();
+
+    public boolean refill(String request);
 }

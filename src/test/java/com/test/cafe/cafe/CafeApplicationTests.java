@@ -13,7 +13,7 @@ class CafeApplicationTests {
 		machine.init(payload);
 		System.out.println(machine.getTotalItemsQuantity());
 		for (int i = 0; i < 2; i++) {
-			System.out.println(machine.prepare());
+			System.out.println(machine.serve());
 			System.out.println(machine.getTotalItemsQuantity());
 		}
 	}
