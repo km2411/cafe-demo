@@ -43,7 +43,7 @@ public class CoffeeMachine implements ServingMachine {
     }
 
     @Override
-    public List<String> serve() {
+    public synchronized List<String> serve() {
         int count = this.outlets;
         Collections.shuffle(this.beverages);
         Iterator<Beverage> iter = this.beverages.iterator();
@@ -60,7 +60,7 @@ public class CoffeeMachine implements ServingMachine {
     }
 
     @Override
-    public boolean refill(String request) {
+    public synchronized boolean refill(String request) {
         Map<String, Object> info = parse(request, "total_items_quantity");
         if (info != null) {
             ConcurrentHashMap<String, Integer> itemQuMap = new ConcurrentHashMap<>();
@@ -129,19 +129,19 @@ public class CoffeeMachine implements ServingMachine {
         return true;
     }
 
-    private synchronized void adjustQuantities(Beverage bv) {
+    private void adjustQuantities(Beverage bv) {
         for (Entry<String, Integer> item : bv.getIngredients().entrySet()) {
             update(item, false);
         }
     }
 
-    private synchronized void refillItems(ConcurrentHashMap<String, Integer> itemQuMap) {
+    private void refillItems(ConcurrentHashMap<String, Integer> itemQuMap) {
         for (Entry<String, Integer> item : itemQuMap.entrySet()) {
             update(item, true);
         }
     }
 
-    private synchronized void update(Entry<String, Integer> item, boolean add) {
+    private void update(Entry<String, Integer> item, boolean add) {
         int factor = add ? 1 : -1;
         Integer amnt = this.totalItemsQuantity.get(item.getKey());
         Integer val = factor * item.getValue();

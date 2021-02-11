@@ -1,0 +1,107 @@
+{
+	"info": {
+		"_postman_id": "9780e0ea-cbbc-4b23-a8fc-847756fe55e1",
+		"name": "cafe-demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Initialize Cafe",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"machine\": {\r\n        \"outlets\": {\r\n            \"count_n\": 3\r\n        },\r\n        \"total_items_quantity\": {\r\n            \"hot_water\": 500,\r\n            \"hot_milk\": 500,\r\n            \"ginger_syrup\": 100,\r\n            \"sugar_syrup\": 100,\r\n            \"tea_leaves_syrup\": 100\r\n        },\r\n        \"beverages\": {\r\n            \"hot_tea\": {\r\n                \"hot_water\": 200,\r\n                \"hot_milk\": 100,\r\n                \"ginger_syrup\": 10,\r\n                \"sugar_syrup\": 10,\r\n                \"tea_leaves_syrup\": 30\r\n            },\r\n            \"hot_coffee\": {\r\n                \"hot_water\": 100,\r\n                \"ginger_syrup\": 30,\r\n                \"hot_milk\": 400,\r\n                \"sugar_syrup\": 50,\r\n                \"tea_leaves_syrup\": 30\r\n            },\r\n            \"black_tea\": {\r\n                \"hot_water\": 300,\r\n                \"ginger_syrup\": 30,\r\n                \"sugar_syrup\": 50,\r\n                \"tea_leaves_syrup\": 30\r\n            },\r\n            \"green_tea\": {\r\n                \"hot_water\": 100,\r\n                \"ginger_syrup\": 30,\r\n                \"sugar_syrup\": 50,\r\n                \"green_mixture\": 30\r\n            }\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/cafe/init",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cafe",
+						"init"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Status - Item Quantity",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/cafe/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cafe",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Serve Beverages",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/cafe/serve",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cafe",
+						"serve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refill ",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"total_items_quantity\": {\r\n        \"hot_water\": 500,\r\n        \"hot_milk\": 500,\r\n        \"ginger_syrup\": 100,\r\n        \"sugar_syrup\": 100,\r\n        \"tea_leaves_syrup\": 100\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/cafe/refill",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"cafe",
+						"refill"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
